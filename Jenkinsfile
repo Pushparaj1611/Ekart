@@ -50,10 +50,10 @@ pipeline {
         }
         stage('Login to ECR') {
             steps {
-                    sh 'sudo aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID'
-                    sh 'sudo aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY'
-                    sh 'sudo aws configure set region $AWS_REGION'
-                    sh 'sudo aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL'
+                sh 'aws --version'  // Check AWS CLI installation
+                sh '''
+                aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL
+                '''
             }
         }     
         stage('Build Docker Image') {
