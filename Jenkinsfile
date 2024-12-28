@@ -1,5 +1,12 @@
 pipeline {
     agent any
+    Environment {
+        AWS_ACCESS_KEY_ID = 'AKIAS2VS377U2EHC45EL'
+        AWS_SECRET_ACCESS_KEY = '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'
+        AWS_REGION = 'us-east-1'
+        ACCOUNT_ID = '194722398185'
+        ECR_URL = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+    }
 
     stages {
         stage('Git checkout') {
@@ -41,5 +48,24 @@ pipeline {
                
             }
         }
+        stage('Login to ECR') {
+            steps {
+                    sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID'
+                    sh 'aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY'
+                    sh 'aws configure set region $AWS_REGION'
+                    sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL'
+            }
+        }     
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $ECR_URL/ekart:latest Docker/Dockerfile'
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push $ECR_URL/ekart:latest'
+            }
+        }
+        }  
     }
-}
+
