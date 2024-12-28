@@ -58,7 +58,7 @@ pipeline {
         }     
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $ECR_URL/ekart:latest docker/Dockerfile'
+                sh 'docker build -t $ECR_URL/ekart:latest -f docker/Dockerfile .'
             }
         }
         stage('Push Docker Image') {
